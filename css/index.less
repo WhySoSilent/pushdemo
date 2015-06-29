@@ -1,0 +1,293 @@
+// common
+html {
+	padding: 0;
+	margin: 0;
+}
+body {
+	margin: 0;
+  padding: 0;
+  color: #101010;
+  background: @panelBackgroundColor;
+}
+// h1 {
+// 	font-size: 18px;
+// }
+
+// 面板 - 通用设定
+@panelBackgroundColor :#f0eff5;
+@levelLineColor: #bbb;
+@panelHeaderHeight: 43px;
+div.panel {
+	&.hide {
+		display: none;
+	}
+
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background: @panelBackgroundColor;
+	// pannel 的标题栏
+	&>div.head {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: @panelHeaderHeight;
+		text-align: center;
+		background: @panelBackgroundColor;
+		border-bottom: 1px solid @levelLineColor;
+		// panel 标题Title
+		h1 {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			font-size: 18px;
+			text-align: center;
+		}
+		// panel 的关闭元素默认是span
+		span {
+			position: absolute;
+			top: 0;
+			right: 0;
+		  display: block;
+		  height: 43px;
+		  width: 43px;
+		  line-height: 43px;
+		  font-size: 18px;
+		  z-index: 1;
+		}
+		// panel title 的编辑框
+		div.edit {
+			display: none;
+		  position: relative;
+		  width: 70%;
+		  height: 40px;
+		  margin-top: 2px;
+		  margin-left: 15%;
+
+		  &>input[type="text"] {
+			  position: absolute;
+			  top: 0;
+			  left: 0;
+			  box-sizing: border-box;
+		  	width: 100%;
+			  height: 100%;
+  			font-size: 18px;
+				text-align: center;
+				background: #C7C7C7;
+				border: 0;
+				border-radius: 5px;
+
+		  }
+		}
+
+		// editing 状态下
+		&.editing {
+			div.edit {
+				display: block;
+			}
+		}
+	}
+	&>div.content {
+		margin-top: @panelHeaderHeight;
+
+		ul {
+			margin: 0;
+			padding: 0;
+
+			li {
+				div.level {
+				  box-sizing: border-box;
+				  padding: 15px 10px 0px 10px;
+				  border-bottom: 1px solid #EFEFEF;
+				  background: #fff;
+
+					a {
+						display: block;
+					  float: right;
+					  width: 77px;
+					  height: 37px;
+					  border-radius: 8px;
+					  text-align: center;
+					  line-height: 37px;
+					  text-decoration: none;
+					  color: #fff;
+					  background: #242736;
+					  // border: 1px solid #bbb;
+					}
+
+					h3 {
+						margin: 0;
+						font-weight: 100;
+					}
+
+					p {
+						margin-top: 10px;
+					}
+
+					&.add {
+						height: 43px;
+					  padding-top: 5px;
+					  color: #BDBDBD;
+					  background: #242736;
+
+					  span {
+					  	float: right;
+					  	font-size: 28px;
+					  	line-height: 38px;
+					  }
+					}
+				}
+			}
+		}
+	}
+	a.removeBtn {
+		display: block;
+	  box-sizing: border-box;
+	  width: 90%;
+	  height: 40px;
+	  line-height: 40px;
+	  margin: 30px auto;
+	  text-align: center;
+	  color: #4F4F4F;
+	  background-color: #d0cfcf;
+	  // border: 1px solid #A6A6A6;
+	  border-radius: 5px;
+	}
+}
+div.panel#controlPanel {
+	div#targetBot {
+	  color: #BEBEBE;
+	  margin-top: 30px;
+		text-align: center;
+
+		input[type="text"] {
+		  box-sizing: border-box;
+		  width: 60px;
+		  padding: 5px;
+		  color: #A8A8A8;
+			background-color: #E0E0E0;
+		  text-align: center;
+		  border: 0;
+		  border-radius: 3px;
+		}
+	}
+}
+// 设定 panel
+div.panel#confPanel {
+	
+	div.level {
+		border: 0;
+		padding-bottom: 10px;
+	}
+	// 流程配置开关
+	div.flowSwitch {
+		text-align: center;
+		color: #fffeff;
+		background: #242736;
+		// border: 1px solid @levelLineColor;
+
+		div.switcher {
+			display: inline-block;
+			width: 30%;
+			height: 100%;
+			
+			&.offStyle {
+				color: #8E8E8E;
+			}
+		}
+	}
+	// section 标题
+	p.label {
+		margin-top: 0;
+		color: #242736;
+	}
+	// 文本输入
+	input[type="text"].tts {
+	  box-sizing: border-box;
+		width: 95%;
+	  height: 40px;
+	  margin-left: 5%;
+	  padding: 10px;
+	  font-size: 14px;
+	  border-radius: 5px;
+	  background: #F2F1F1;
+	  border: 0;
+	  // border: 1px solid @levelLineColor;
+	}
+	// 选择
+	select {
+		width: 95%;
+	  height: 30px;
+	  margin-left: 5%;
+	  // 优化下
+	}
+	// 动作列表
+	ul.actionStack {
+		width: 95%;
+	  margin-left: 5%;
+	  background: #f9f9f9;
+	  border: 1px solid #D8D8D8;
+	  border-radius: 5px;
+	  list-style-type: none;
+
+	  li {
+	  	box-sizing: border-box;
+  		padding-left: 10px;
+	  	border-bottom: 1px solid #D8D8D8;
+
+	  	&:last-child {
+	  		border-bottom: 0;
+	  		color: #B8B8B8;
+
+	  	}
+	  }
+	}
+}
+// action Panel
+div.panel#coverPanel {
+	padding-top: 80px;
+
+	&>div {
+		height: 50px;
+  	// border: 1px solid #331;
+
+		span.exit {
+		  float: right;
+			display: inline-block;
+		  width: 40px;
+		  height: 40px;
+		  margin-right: 10px;
+		  font-size: 25px;
+		  line-height: 40px;
+		  text-align: center;
+		  // border: 1px solid #333;
+		}
+
+  	h3 {
+			text-align: center;
+  	}
+
+  	select {
+  		width: 80%;
+  		margin-left: 10%;
+  		height: 30px;
+  	}
+
+  	input[type="text"] {
+		  box-sizing: border-box;
+  		width: 80%;
+		  height: 40px;
+		  margin-left: 10%;
+		  padding: 10px;
+		  font-size: 14px;
+		  border-radius: 5px;
+		  background: #fff;
+		  border: 0;
+  	}
+ 	}
+}

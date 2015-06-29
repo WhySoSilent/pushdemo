@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<title>推送工具</title>
+	<link rel="stylesheet" type="text/css" href="/lib/fontIcons.css">
+	<link rel="stylesheet" href="css/index.css">
+	<script src="lib/angular.min.js"></script>
+	<!-- iPhone 6 Plus icon -->
+	<link href="apple-touch-icon-precomposed-180.png"
+	      sizes="180x180"
+	      rel="apple-touch-icon-precomposed">
+	<!-- iPhone retina icon (iOS < 7) -->
+	<link href="apple-touch-icon-precomposed-114.png"
+	      sizes="114x114"
+	      rel="apple-touch-icon-precomposed">
+	<!-- iPhone non-retina icon (iOS < 7) -->
+	<link href="apple-touch-icon-precomposed-57.png"
+	      sizes="57x57"
+	      rel="apple-touch-icon-precomposed">
+	<!-- iPhone 6 Plus portrait startup image -->
+	<link href="apple-touch-startup-image-1242x2148.png"
+	      media="(device-width: 414px) and (device-height: 736px)
+	             and (-webkit-device-pixel-ratio: 3)
+	             and (orientation: portrait)"
+	      rel="apple-touch-startup-image">
+	<!-- iPhone 6 Plus landscape startup image -->
+	<link href="apple-touch-startup-image-1182x2208.png"
+	      media="(device-width: 414px) and (device-height: 736px)
+	             and (-webkit-device-pixel-ratio: 3)
+	             and (orientation: landscape)"
+	      rel="apple-touch-startup-image">
+	<!-- iPhone 6 startup image -->
+	<link href="apple-touch-startup-image-750x1294.png"
+	      media="(device-width: 375px) and (device-height: 667px)
+	             and (-webkit-device-pixel-ratio: 2)"
+	      rel="apple-touch-startup-image">
+	<!-- iPhone 5 startup image -->
+	<link href="apple-touch-startup-image-640x1096.png"
+	      media="(device-width: 320px) and (device-height: 568px)
+	             and (-webkit-device-pixel-ratio: 2)"
+	      rel="apple-touch-startup-image">
+	<!-- iPhone < 5 retina startup image -->
+	<link href="apple-touch-startup-image-640x920.png"
+	      media="(device-width: 320px) and (device-height: 480px)
+	             and (-webkit-device-pixel-ratio: 2)"
+	      rel="apple-touch-startup-image">
+	<!-- iPhone < 5 non-retina startup image -->
+	<link href="apple-touch-startup-image-320x460.png"
+	      media="(device-width: 320px) and (device-height: 480px)
+	             and (-webkit-device-pixel-ratio: 1)"
+	      rel="apple-touch-startup-image">
+</head>
+<body ng-app="main" ng-controller="mainController">
+<div id="controlPanel" class="panel _hide" ng-class='{ hide : scene!=null }'>
+	<!-- div.head 标题栏 -->
+	<div class="head">
+		<h1 class="title">触发</h1>
+	</div>
+	<!-- div.content 内容区域 -->
+	<div class="content">
+		<ul id="caseList">
+			<li>
+				<!-- div.add 添加一个新的触发条件 -->
+				<div class="add level" ng-click="addNewScene()">
+					<span>+</span>
+					<p>共{{scenes.length}}个推送场景，点击添加</p>
+				</div>
+			</li>
+			<li ng-repeat="s in scenes">
+				<!-- div.level 一个列表项 -->
+				<div class="level">
+					<a ng-click="sendThis($index)">触发</a>
+					<h3 ng-click="editThis($index)">{{ s.name }}&nbsp;<!--span ng-if="s.name==''">未命名</span--></h3>
+					<p><span ng-if="s.haveTTS">播报 - </span><span ng-if="s.haveInteration">征询</span><span ng-if="s.haveAction"> - 动作</span>&nbsp;</p>
+				</div>
+			</li>
+		</ul>
+		<div id="targetBot">目标设备: <span><input type="text" ng-model="targetBot"></span></div>
+	</div>
+</div>
+<div id="confPanel" class="panel _hide" ng-class='{ hide : scene==null || action!=null}'>
+	<!-- div.head 标题栏 -->
+	<div class="head _editing" ng-class="{editing: editTitle}">
+		<h1 ng-click="toEditTitle()">{{scene.name}}</h1>
+		<span ng-click="exitEditing()">X</span>
+		<div class="edit"><input type="text" ng-model="scene.name"></div>
+	</div>
+    <!-- div.content 内容区域 -->
+    <div class="content">
+        <ul id="caseEditList">
+        	<li>
+        		<!-- div.flowSwitch 流程开关组合 -->
+        		<div class="flowSwitch level">
+        			<div class="switcher _offStyle" ng-click="toggleThe('haveTTS')" ng-class="{offStyle: !scene.haveTTS}">
+        				<p>[icon]</p><p ng-if="scene.haveTTS">有播报</p><p ng-if="!scene.haveTTS">无播报</p>
+        			</div>
+        			<div class="switcher _offStyle" ng-click="toggleThe('haveInteration')" ng-class="{offStyle: !scene.haveInteration}">
+        				<p>[icon]</p><p ng-if="scene.haveInteration">有交互</p><p ng-if="!scene.haveInteration">无交互</p>
+        			</div>
+        			<div class="switcher _offStyle" ng-click="toggleThe('haveAction')" ng-class="{offStyle: !scene.haveAction}">
+        				<p>[icon]</p><p ng-if="scene.haveAction">有动作</p><p ng-if="!scene.haveAction">无动作</p>
+        			</div>
+        		</div>
+        	</li>
+        	<li ng-if="scene.haveTTS">
+        		<div class="level">
+        			<p class="label">TTS播报</p>
+        			<input class="tts" type="text" ng-model="scene.tts">
+        		</div>
+        	</li>
+        	<li ng-if="scene.haveInteration">
+        		<div class="level">
+        			<p class="label">触发交互</p>
+        			<select id="interation" ng-model="scene.interation" ng-options="t.value as t.des for t in interactiveType">
+        				<!-- <option value="solicit">征询用户意愿</option> -->
+        			</select>
+        		</div>
+        	</li>
+        	<li ng-if="scene.haveInteration">
+        		<div class="level">
+        			<p class="label">肯定回复</p>
+        			<ul class="actionStack">
+        				<li ng-repeat="a in scene.resYes track by $index" ng-click="editThisAction($index, 'resYes')">
+        					<p ng-if="a.type=='tts'">【TTS播报】 {{a.value}}</p>
+        					<p ng-if="a.type=='audio'">【媒体播放】 {{a.des}}</p>
+        				</li>
+        				<li ng-click="addAction('resYes')"><p>添加一个动作</p></li>
+        			</ul>
+        		</div>
+        	</li>
+        	<li ng-if="scene.haveInteration">
+        		<div class="level">
+        			<p class="label">否定回复</p>
+        			<ul class="actionStack">
+        			  <li ng-repeat="a in scene.resNo track by $index" ng-click="editThisAction($index, 'resNo')">
+        					<p ng-if="a.type=='tts'">【TTS播报】 {{a.value}}</p>
+        					<p ng-if="a.type=='audio'">【媒体播放】 {{a.des}}</p>
+        				</li>
+        				<li ng-click="addAction('resNo')"><p>添加一个动作</p></li>
+        			</ul>
+        		</div>
+        	</li>
+        	<li ng-if="scene.haveInteration">
+        		<div class="level">
+        			<p class="label">默认动作</p>
+        			<ul class="actionStack">
+	        			<li ng-repeat="a in scene.defAction track by $index" ng-click="editThisAction($index, 'defAction')">
+        					<p ng-if="a.type=='tts'">【TTS播报】 {{a.value}}</p>
+        					<p ng-if="a.type=='audio'">【媒体播放】 {{a.des}}</p>
+        				</li>
+	        			<li ng-click="addAction('defAction')"><p>添加一个动作</p></li>
+	        		</ul>
+        		</div>
+        	</li>
+        	<li ng-if="scene.haveAction">
+        		<div class="level">
+        			<p class="label">动作</p>
+        			<ul class="actionStack">
+	        			<li ng-repeat="a in scene.action track by $index" ng-click="editThisAction($index, 'action')">
+        					<p ng-if="a.type=='tts'">【TTS播报】 {{a.value}}</p>
+        					<p ng-if="a.type=='audio'">【媒体播放】 {{a.des}}</p>
+        				</li>
+	        			<li ng-click="addAction('action')"><p>添加一个动作</p></li>
+	        		</ul>
+        		</div>
+        	</li>
+        	<li>
+        		<a class="removeBtn" ng-click="removeThis()">删除这条推送</a>
+        	</li>
+        </ul>
+    </div>
+</div>
+<div id="coverPanel" class="panel _hide" ng-class='{ hide : action==null}'>
+	<div><span class="exit" ng-click="exitActionEditing()">X</span></div>
+	<div><h3>编辑此动作</h3></div>
+	<div><select id="actions" ng-model="action.type" ng-options="t.value as t.des for t in actionType"></select></div>
+	<div ng-if="action.type=='tts'"><input type="text" ng-model="action.value"></div>
+	<div ng-if="action.type=='audio'">
+		<select id="audioType" ng-model="action.des">
+			<option value="李荣浩 - 作曲家" selected>音乐</option>
+			<option value="暴走大事件">节目</option>
+			<option value="今日头条">播客</option>
+		</select>
+	</div>
+	<div><a class="removeBtn" ng-click="removeThisAction()">删除这个动作</a></div>
+</div>
+</body>
+
+<script src="index.js"></script>
+</html>
