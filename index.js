@@ -228,13 +228,13 @@ var BuildModule = angular.module('build', ['scene'])
 		var content = {};
 		content.name = scene.name || "没有名称";
 		if (scene.haveTTS) {
-			content.dialog = {
+			content.dialog = [{
 				"question": {
 				  "speech": scene.tts,
           "mode": "tts",
           "role": "female"
 				}
-			}
+			}];
 		}
 		if (scene.haveInteration && scene.interation == 'solicit') {
 			content.feedback = {
