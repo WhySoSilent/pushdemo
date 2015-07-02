@@ -230,7 +230,7 @@ var BuildModule = angular.module('build', ['scene'])
 		if (scene.haveTTS) {
 			content.dialog = {
 				"question": {
-				  "speech": Scene.tts,
+				  "speech": scene.tts,
           "mode": "tts",
           "role": "female"
 				}
