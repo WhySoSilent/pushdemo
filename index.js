@@ -229,6 +229,7 @@ var BuildModule = angular.module('build', ['scene'])
 		content.name = scene.name || "没有名称";
 		if (scene.haveTTS) {
 			content.dialog = [{
+				"id" : 0,
 				"question": {
 				  "speech": scene.tts,
           "mode": "tts",
