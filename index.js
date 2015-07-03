@@ -257,7 +257,8 @@ var BuildModule = angular.module('build', ['scene'])
 		
 	}
 	Build.send = function (script) {
-		var url = "http://121.201.13.32/xbot/v1/push/messages?user=" + Scene.targetBot;
+		//var url = "http://121.201.13.32/xbot/v1/push/messages?user=" + Scene.targetBot;
+		var url = "http://www.tuxiaobao.me/xbot/v1/push/issued/messages?user=" + Scene.targetBot;
 		$http.post(url, script).success(function() {
 			alert("已经触发");
 		});
@@ -270,8 +271,8 @@ Angu.controller('mainController', [ '$scope', '$timeout', 'Config', 'Build', 'Sc
 	// data
   $scope.scenes = Scene.getScenes();
 	$scope.scene = null;
-	$scope.targetBot = Scene.targetBot;
-	$scope.$watch('targetBot', function(n, o) {
+	$scope.SceneServer = Scene;
+	$scope.$watch('SceneServer.targetBot', function(n, o) {
 			if ( n==o ) return;
 			Scene.saveTargetBot(n);
 		});
