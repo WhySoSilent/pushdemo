@@ -226,22 +226,143 @@ var BuildModule = angular.module('build', ['scene'])
 			return;
 		}
 		var content = {};
+		content.id = "qw23er";		//随机生成的id
+		content.type = "audio-dest";
 		content.name = scene.name || "没有名称";
+		content.inBackground = false;	//默认都是不显示监听页面的,需要设置dialog.display
+		content.autoClose = true;			//交互对话结束后自动关闭界面
+		content.priority = 80;		//推送优先级，娱乐类暂时统一设计为 80
+		content.desc = false;			//同优先级不插队
+		content.expired = "2015-08-10T09:48:57+08:00";	//有效期，具体到时刻
+
+		content.dialog = [{
+			"id" : 0,
+			"timeout": "5000",				//用户超过5s不响应视为超时 	//!!! 放在这里不合适
+			"display":{ 							//显示，当"display"有设置，且"inBackground"为"false"时，显示一个提示界面
+				"title":"有内容更新啦",		//提示界面下方标题
+				"content":"小宝推荐"			//提示界面中央的提示内容主题
+			}
+		}];
+
 		if (scene.haveTTS) {
-			content.dialog = [{
-				"id" : 0,
-				"question": {
-				  "speech": scene.tts,
-          "mode": "tts",
-          "role": "female"
-				}
-			}];
-		}
-		if (scene.haveInteration && scene.interation == 'solicit') {
-			content.feedback = {
-				"state": "answer"
+			//语音消息，如果有"speech",接收到消息后会先说以下的语音                        
+			content.dialog[0].speech = {
+				"mode": "tts",
+				"content": "小宝收到一条目的地，是否立即开始导航",	
+				"role": "male"	//目前仅支持"male", "female"
 			}
 		}
+		if (scene.haveInteration) {
+			//人机交互，如果有"expectedAnswer",会触发语音交互
+			content.dialog[0].expectedAnswer = [
+				//预置答案，可以填com.tuyou.tsd.voice.service.VoiceCommand中的CommonMessage，也可以填自定义文本
+				"tsd.command.NEGATIVE",		//肯定回复，"不好"之类
+				"tsd.command.POSITIVE",		//否定回复，"好"之类
+				//还可以添加自定义答案
+      ];
+      content.dialog[0].onSuccess = [{"value": "tsd.command.POSITIVE"},{"value": "tsd.command.NEGATIVE"}];
+      //用户肯定回复
+      (function(){
+	    	var i,len = scene.resYes.length;
+	    	if( len == 0 ) return;
+	    	//设置tts
+	    	for(i = 0; i < len; i++ ) {
+	    		var action = scene.resYes[i];
+					if(action.type == "tts") {
+						content.dialog[0].onSuccess[0].speech = {
+        			"role": "male",
+    		    	"content": action.value,
+							"mode": "tts"
+   			 		}
+					}
+					content.dialog[0].onSuccess[0].action = "return";	//初始值为return
+					if(action.type == "audio") {
+						content.dialog[0].onSuccess[0].message = "tsd.event.push.audio_category";
+						content.dialog[0].onSuccess[0].action = "end";
+            content.dialog[0].onSuccess[0].params = {
+     					"type": "music",
+         			"url": "/xbot/v1/audio/manager/category?category=a7d03ba4-8c1b-4c84-8d34-328b0289d746"
+     				}
+					}
+				}
+      })();
+			//用户否定回复
+      (function(){
+	    	var i,len = scene.resNo.length;
+	    	if( len == 0 ) return;
+	    	//设置tts
+	    	for(i = 0; i < len; i++ ) {
+	    		var action = scene.resNo[i];
+					if(action.type == "tts") {
+						content.dialog[0].onSuccess[1].speech = {
+        			"role": "male",
+    		    	"content": action.value,
+							"mode": "tts"
+   			 		}
+					}
+					content.dialog[0].onSuccess[1].action = "return";	//初始值为return
+					if(action.type == "audio") {
+						content.dialog[0].onSuccess[1].message = "tsd.event.push.audio_category";
+						content.dialog[0].onSuccess[1].action = "end";
+            content.dialog[0].onSuccess[1].params = {
+     					"type": "music",
+         			"url": "/xbot/v1/audio/manager/category?category=a7d03ba4-8c1b-4c84-8d34-328b0289d746"
+     				}
+					}
+				}
+				//设置播放
+				
+      })();
+
+      content.dialog[0].onFailed = [
+      	{"reason": "ERR_NO_SPEECH"},
+      	{
+      		"action": "return",
+	        "reason": "ERR_NO_MATCH_ANSWER_ON_PUSH",
+          "speech": {
+        		"role": "male",
+    		    "content": "老大，你真逗，小宝退下了",
+						"mode": "tts"
+     		 }},
+      	{
+      		"action": "return",
+          "reason": "ERR_USER_CANCELLED",
+          "speech": {
+        		"role": "xbot",
+    		    "content": "哦",
+						"mode": "tts"
+     		 }}
+     	];
+     	(function(){
+	    	var i,len = scene.defAction.length;
+	    	if( len == 0 ) return;
+	    	//设置tts
+	    	for(i = 0; i < len; i++ ) {
+	    		var action = scene.defAction[i];
+					if(action.type == "tts") {
+						content.dialog[0].onFailed[0].speech = {
+        			"role": "male",
+    		    	"content": action.value,
+							"mode": "tts"
+   			 		}
+					}
+					content.dialog[0].onSuccess[0].action = "return";	//初始值为return
+					if(action.type == "audio") {
+						content.dialog[0].onSuccess[0].message = "tsd.event.push.audio_category";
+						content.dialog[0].onSuccess[0].action = "end";
+            content.dialog[0].onSuccess[0].params = {
+     					"type": "music",
+         			"url": "/xbot/v1/audio/manager/category?category=a7d03ba4-8c1b-4c84-8d34-328b0289d746"
+     				}
+					}
+				}
+      })();
+		}
+		// if (scene.haveInteration && scene.interation == 'solicit') {
+		// 	content.feedback = {
+		// 		"state": "answer"
+		// 	}
+		// }
 
 		var script = {
 	    "sender": "self",
