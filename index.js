@@ -248,7 +248,7 @@ var BuildModule = angular.module('build', ['scene'])
 			//语音消息，如果有"speech",接收到消息后会先说以下的语音                        
 			content.dialog[0].speech = {
 				"mode": "tts",
-				"content": "小宝收到一条目的地，是否立即开始导航",	
+				"content": scene.tts,	
 				"role": "male"	//目前仅支持"male", "female"
 			}
 		}
