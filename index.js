@@ -346,11 +346,11 @@ var BuildModule = angular.module('build', ['scene'])
 							"mode": "tts"
    			 		}
 					}
-					content.dialog[0].onSuccess[0].action = "return";	//初始值为return
+					content.dialog[0].onFailed[0].action = "return";	//初始值为return
 					if(action.type == "audio") {
-						content.dialog[0].onSuccess[0].message = "tsd.event.push.audio_category";
-						content.dialog[0].onSuccess[0].action = "end";
-            content.dialog[0].onSuccess[0].params = {
+						content.dialog[0].onFailed[0].message = "tsd.event.push.audio_category";
+						content.dialog[0].onFailed[0].action = "end";
+            content.dialog[0].onFailed[0].params = {
      					"type": "music",
          			"url": "/xbot/v1/audio/manager/category?category=a7d03ba4-8c1b-4c84-8d34-328b0289d746"
      				}
